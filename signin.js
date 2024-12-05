@@ -10,12 +10,15 @@ async function signin(event){
         }
         console.log(obj)
         const response=await axios.post("http://localhost:4000/user/signin",obj)
+        localStorage.setItem("token",response.data.token)
         console.log(response)
+        window.location.href = "./chatApp.html";
         
+
        
     }
    catch(err){
-    console.log(err.response.data.message)
+    console.log(err)
    
    }
       

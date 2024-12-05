@@ -9,7 +9,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: white;
+    
   }
   
   .chat-container {
@@ -19,11 +19,10 @@
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-   
+  
   }
   
   h1 {
-    background-color: white;
     text-align: center;
     padding: 10px;
     font-size: 20px;
@@ -35,6 +34,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 10px;
+    background-color: #f9f9f9;
   }
   
   .message1 {
@@ -45,7 +45,6 @@
     font-size: 16px;
   }
   .message2 {
-    background-color:white;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
@@ -65,16 +64,16 @@
   
   .chat-input {
     flex: 1;
+    margin-left: 300px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-left: 20%;
   }
   
   .send-btn {
-    margin-right: 30%;
-    padding: 10px 20px;
+    margin-right: 100px;
+    padding: 10px 10px;
     font-size: 16px;
     color: white;
     background-color: #007bff;

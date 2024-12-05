@@ -18,8 +18,13 @@
       <div class="message2">Vaibhav: All good</div>
     </div>
   </div>
-  <div class="input-container">
-    <input type="text" class="chat-input" placeholder="Type your message here">
-    <button class="send-btn">Send</button>
-  </div>
+  <form onsubmit="sendMessage(event)">
+    <div class="input-container">
+        <input type="text" class="chat-input" name="message" placeholder="Type your message here">
+        <button class="send-btn" type="submit">Send</button>
+    </div>
+  </form>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+<script src="chatApp.js"></script>
+</html>
