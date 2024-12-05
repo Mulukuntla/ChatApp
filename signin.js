@@ -10,10 +10,12 @@ async function signin(event){
         }
         console.log(obj)
         const response=await axios.post("http://localhost:4000/user/signin",obj)
+        console.log(response)
+        
        
     }
    catch(err){
-    console.log(err)
+    console.log(err.response.data.message)
    
    }
       
