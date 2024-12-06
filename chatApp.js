@@ -40,7 +40,7 @@ function updatedsendMessage(name,message){
 
 
 document.addEventListener('DOMContentLoaded',function () {
-    allMessages()
+    setInterval(allMessages,1000)
     async function allMessages(){
         try{
             const a=document.getElementById("chats")
@@ -49,17 +49,17 @@ document.addEventListener('DOMContentLoaded',function () {
             var messages=[]
             const response=await axios.get("http://localhost:4000/messages/allMessages",{headers :{"Authorization" :token}}) 
             response.data.allMessages.forEach(element => {
-                //updatedsendMessage(element.userName,element.message)
-                messages.push({id:element.id,userName:element.userName,message:element.message})
+                updatedsendMessage(element.userName,element.message)
+                //messages.push({id:element.id,userName:element.userName,message:element.message})
             });
             
-            localStorage.setItem("messages",JSON.stringify(messages))
-            const getAllMessages=localStorage.getItem("messages")
-            console.log(getAllMessages)
-            JSON.parse(getAllMessages).forEach(element => {
-                updatedsendMessage(element.userName,element.message)
+            //localStorage.setItem("messages",JSON.stringify(messages))
+            //const getAllMessages=localStorage.getItem("messages")
+            //console.log(getAllMessages)
+            //JSON.parse(getAllMessages).forEach(element => {
+                //updatedsendMessage(element.userName,element.message)
                 //messages.push({id:element.id,name:element.userName,message:element.message})
-            });
+            //});
             
         }
         catch(error){
