@@ -1,3 +1,5 @@
+
+
 async function sendMessage(event){
     event.preventDefault()
     const message=event.target.message.value
@@ -13,6 +15,7 @@ async function sendMessage(event){
     const updatedMessage=response.data.message
     console.log(updatedMessage)
     console.log(user.name)
+    document.getElementById("message").value=""
     
    
 
@@ -40,26 +43,47 @@ function updatedsendMessage(name,message){
 
 
 document.addEventListener('DOMContentLoaded',function () {
-    setInterval(allMessages,1000)
+    //setInterval(allMessages,1000)
+    allMessages()
     async function allMessages(){
         try{
             const a=document.getElementById("chats")
             a.innerHTML=""
             const token=localStorage.getItem("token")
-            var messages=[]
-            const response=await axios.get("http://localhost:4000/messages/allMessages",{headers :{"Authorization" :token}}) 
-            response.data.allMessages.forEach(element => {
-                updatedsendMessage(element.userName,element.message)
-                //messages.push({id:element.id,userName:element.userName,message:element.message})
-            });
+            var getAllMessages=localStorage.getItem("messages")
+            console.log(getAllMessages)
+            if(getAllMessages==null || JSON.parse(getAllMessages).length==0){
+                getAllMessages=[]
+                var messageee=-1
+                localStorage.setItem("messages",[])
+            }
+            else{
+                getAllMessages=JSON.parse(getAllMessages)
+                console.log(getAllMessages.length)
+                var messageee=getAllMessages[getAllMessages.length-1].id
+                console.log(messageee)
+            }
             
-            //localStorage.setItem("messages",JSON.stringify(messages))
-            //const getAllMessages=localStorage.getItem("messages")
-            //console.log(getAllMessages)
-            //JSON.parse(getAllMessages).forEach(element => {
+            
+
+            const response=await axios.get(`http://localhost:4000/messages/allMessages/${messageee}`,{headers :{"Authorization" :token}}) 
+            response.data.allMessages.forEach(element => {
+
                 //updatedsendMessage(element.userName,element.message)
-                //messages.push({id:element.id,name:element.userName,message:element.message})
-            //});
+                getAllMessages.push({id:element.id,userId:element.userId,userName:element.userName,message:element.message})
+            });
+            console.log(response.data.allMessages)
+            
+            
+            if(getAllMessages.length>10){
+                getAllMessages=getAllMessages.slice(-10)
+            }
+            getAllMessages=JSON.stringify(getAllMessages)
+            localStorage.setItem("messages",getAllMessages)
+            const updatedMessages=localStorage.getItem("messages")
+            JSON.parse(updatedMessages).forEach(element => {
+                updatedsendMessage(element.userName,element.message)
+            });
             
         }
         catch(error){
