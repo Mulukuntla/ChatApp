@@ -12,7 +12,7 @@ async function signin(event){
         const response=await axios.post("http://localhost:4000/user/signin",obj)
         localStorage.setItem("token",response.data.token)
         console.log(response)
-        window.location.href = "./chatApp.html";
+        window.location.href = "./group.html";
         
 
        
