@@ -12,7 +12,7 @@
     <div class="group-list">
       <h2>Groups</h2>
       <form onsubmit="groupAdded(event)">
-        <input name="groupName" id="addGroup"></input>
+        <input name="groupName" id="addGroup" required></input>
         <button type="submit">Add Group</button>
 
       </form>
@@ -24,6 +24,12 @@
     <!-- Chat Section (Right) -->
     <div class="chat-section">
       <h1>Chat App</h1>
+      <button onclick="seeChat()">seeChat</button>
+      <button onclick="members()">seeGroupMembers</button>
+      <div id="addMembersToGroup">
+
+      </div>
+      
       <div class="chat-messages" id="chats">
         <div class="message">You joined</div>
         <div class="message">Vaibhav joined</div>
