@@ -1,29 +1,50 @@
+const socket = io('http://localhost:4000');
+socket.on("connect",()=>{
+    console.log(socket.id)
+})
+//socket.on("receiveMessage",message =>{
+//    console.log(message)
+
+//})
 var numbers;
 
 async function sendMessage(event){
-    event.preventDefault()
-    const message=event.target.message.value
-    const token=localStorage.getItem("token")
-    const groupId=localStorage.getItem("groupId")
-    console.log(groupId)
-    if(groupId ==null){
-        return alert("add Groups")
+    try{
+        event.preventDefault()
+        const message=event.target.message.value
+        const token=localStorage.getItem("token")
+        const groupId=localStorage.getItem("groupId")
+        console.log(groupId)
+        if(groupId ==null){
+            return alert("add Groups")
+        }
+        const user=parseJwt(token)
+        console.log(message)
+        console.log(token)
+        const obj={
+            name:user.name,
+            message:message,
+        }
+        const response=await axios.post(`http://localhost:4000/messages/sendMessage/${groupId}`,obj,{headers :{"Authorization" :token}}) 
+        const updatedMessage=response.data.message.message
+        console.log(updatedMessage)
+        console.log(user.name)
+        
+        socket.emit("sendMessage",message)
+        socket.on("receiveMessage",message =>{
+            updatedsendMessage(user.name,updatedMessage)
+            if(message=="http://localhost:4000/group/allgroups/invite"){
+                updateSendMessageLink()
+            }
+            console.log(message)
+            
+        })
+        document.getElementById("message").value=""
+
     }
-    const user=parseJwt(token)
-    console.log(message)
-    console.log(token)
-    const obj={
-        name:user.name,
-        message:message,
+    catch(err){
+        console.log(err)
     }
-    const response=await axios.post(`http://localhost:4000/messages/sendMessage/${groupId}`,obj,{headers :{"Authorization" :token}}) 
-    const updatedMessage=response.data.message.message
-    console.log(updatedMessage)
-    console.log(user.name)
-    updatedsendMessage(user.name,updatedMessage)
-    updateSendMessageLink()
-    document.getElementById("message").value=""
-    
    
 
 }
