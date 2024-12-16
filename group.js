@@ -2,13 +2,8 @@ const socket = io('http://localhost:4000');
 socket.on("connect",()=>{
     console.log(socket.id)
 })
-//socket.on("receiveMessage",message =>{
-//    console.log(message)
-
-//})
 var numbers;
-
-async function sendMessage(event){
+async function sendMessages(event){
     try{
         event.preventDefault()
         const message=event.target.message.value
@@ -30,7 +25,7 @@ async function sendMessage(event){
         console.log(updatedMessage)
         console.log(user.name)
         
-        socket.emit("sendMessage",message)
+        //socket.emit("sendMessage",message)
         socket.on("receiveMessage",message =>{
             updatedsendMessage(user.name,updatedMessage)
             if(message=="http://localhost:4000/group/allgroups/invite"){
@@ -58,27 +53,78 @@ function parseJwt (token) {
     return JSON.parse(jsonPayload);
 } 
 
-function updatedsendMessage(name,message){
+function updatedsendMessage(name,message,fileUrl){
     const a = document.getElementById("chats");
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
    
-
+    
     if (message.includes("http://localhost:4000/group/allgroups/invite")) {
         // Generate message with a clickable link
         numbers=numbers+1
-        b = `<div class="message">${name}:<a href="#" id="${numbers}a">${message}</a></div>`;
-        a.innerHTML=a.innerHTML+b // Append the new message to the chat
+         // Append the new message to the chat
+        if(fileUrl!=undefined){
+            b = `<div class="message">
+           <img src="${fileUrl}" width="150" height="150"></img><br>
+           ${name}:<a href="#" id="${numbers}a">${message}</a>
+           </div>`;
+           a.innerHTML=a.innerHTML+b
+            
+           
+
+        }
+        else{
+            b = `<div class="message">
+            ${name}:<a href="#" id="${numbers}a">${message}</a>
+            </div>`;
+            a.innerHTML=a.innerHTML+b
+
+        }
+       
+ 
 
         // Add an event listener to the link
     } 
-    else if("http"){
-        b = `<div class="message">${name}:<a href="${message}">${message}</a></div>`
-        a.innerHTML=a.innerHTML+b // Append the new message to the chat
+    else if(message.includes("http")){
+        if(fileUrl!=undefined){
+            b = `<div class="message">
+            <img src="${fileUrl}" width="150" height="150"></img><br>
+            ${name}:<a href="${message}">${message}</a>
+            </div>`
+            a.innerHTML=a.innerHTML+b // Append the new message to the chat
+
+        }
+        else{
+            b = `<div class="message">
+            ${name}:<a href="${message}">${message}</a>
+            </div>`
+            a.innerHTML=a.innerHTML+b // Append the new message to the chat
+
+        }
+     
     }
     else {
         // Generate a normal message
-        b = `<div class="message">${name}: ${message}</div>`;
-        a.innerHTML += b;
+        if(fileUrl!=undefined){
+            console.log("Hi")
+            b = `<div class="message">
+            <img src="${fileUrl}" width="150" height="150"></img><br>
+            ${name}: ${message}
+            </div>`;
+            a.innerHTML += b;
+
+        }
+        else{
+            console.log("Hi")
+            b = `<div class="message">
+            ${name}: ${message}
+            </div>`;
+            a.innerHTML += b;
+
+        }
+      
     }
+    
 
 }
 document.addEventListener('DOMContentLoaded',async function () {
@@ -168,6 +214,7 @@ async function getChat(groupId,inviteLink){
     console.log(search)
     const token=localStorage.getItem("token")
     const response=await axios.get(`http://localhost:4000/messages/allMessages/${groupId}`,{headers :{"Authorization" :token}}) 
+    console.log(response)
     if(response.data.userAdmin==true){
         const searchInput=`<input type="text" id="addMembersToTheGroup"></input>addMembersToTheGroup`
         search.innerHTML=searchInput
@@ -183,7 +230,7 @@ async function getChat(groupId,inviteLink){
     console.log(response)
     numbers=0
     response.data.allMessages.forEach(element => {
-        updatedsendMessage(element.userName,element.message)
+        updatedsendMessage(element.userName,element.message,element.fileUrl)
     });
     console.log(numbers)
     for(let i=1;i<= numbers;i++){
@@ -516,10 +563,50 @@ async function removeUserFromGroup(userName,phoneNumber,userId,groupId){
             members()
             
         }
-        
         console.log("Hi")
-    
+    }
 
+
+async function sendMessage(event){
+    event.preventDefault();
+    const messageInput = document.getElementById("message");
+    const fileInput = document.getElementById("fileInput");
+    const token=localStorage.getItem("token")
+    const user=parseJwt(token)
+    const formData = new FormData();
+    formData.append("message", messageInput.value); // Text message
+    formData.append("name",user.name);
+    console.log(formData)
+    if (fileInput.files[0]) {
+        formData.append("file", fileInput.files[0]); // Attach the file if selected
+    }
+    formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+    });
+    console.log(formData)
+    const groupId=localStorage.getItem("groupId")
+    const response = await axios.post(`http://localhost:4000/messages/sendMessage/${groupId}`, formData, {
+        headers: {
+            "Authorization" :token,
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    console.log(response.data)
+    const name=response.data.message.userName
+    const message=response.data.message.message
+    const fileUrl=response.data.message.fileUrl
+    console.log(name,message,fileUrl)
+    socket.emit("sendMessage",message,fileUrl)
+    socket.on("receiveMessage",(message,fileUrl) =>{
+        updatedsendMessage(name,message,fileUrl)
+        if(message=="http://localhost:4000/group/allgroups/invite"){
+            updateSendMessageLink()
+        }
+        console.log(message)
+        
+    })
+
+    
 }
 
 
